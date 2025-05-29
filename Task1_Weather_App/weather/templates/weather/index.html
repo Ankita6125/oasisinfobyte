@@ -1,0 +1,157 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🌦️ Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome (for weather icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #83a4d4, #b6fbff);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .weather-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .weather-icon {
+            font-size: 60px;
+        }
+
+        .weather-details {
+            margin-top: 20px;
+        }
+
+        .form-control {
+            font-size: 18px;
+        }
+
+        .btn-primary {
+            font-size: 18px;
+        }
+
+        canvas {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-box text-center">
+        <h2 class="mb-4">🌤️ Weather Forecast</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+                <div class="input-group mb-3">
+                     <input type="text" name="city" class="form-control" placeholder="Enter city name" required>
+                    <select name="unit" class="form-select" style="max-width: 150px;">
+                       <option value="metric" {% if selected_unit == "metric" %}selected{% endif %}>Celsius</option>
+                       <option value="imperial" {% if selected_unit == "imperial" %}selected{% endif %}>Fahrenheit</option>
+                    </select>
+                    <button class="btn btn-primary" type="submit">Get Weather</button>
+                </div>
+        </form>
+
+
+        {% if weather %}
+        <div class="weather-icon">
+            <i class="fas {{ weather.icon }}"></i>
+        </div>
+
+        <div class="weather-details">
+            <h3>{{ weather.city }}</h3>
+            <p>{{ weather.description }}</p>
+            <p>🌡️ Temperature: {{ weather.temp }}°{% if selected_unit == "metric" %}C{% else %}F{% endif %}</p>
+            <p>💧 Humidity: {{ weather.humidity }}%</p>
+            <p>🌬️ Wind: {{ weather.wind }} m/s</p>
+        </div>
+        {% endif %}
+
+        {% if forecast %}
+        <hr>
+        <h4 class="mt-4">📈 5-Day Temperature Forecast</h4>
+        <canvas id="forecastChart" height="150"></canvas>
+        {{ forecast|json_script:"forecast-data" }}
+        {% endif %}
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% if forecast %}
+    <script>
+        
+        const forecastData = JSON.parse(document.getElementById('forecast-data').textContent);
+
+        
+        const labels = forecastData.map(item => item.date);
+        const temps = forecastData.map(item => item.temp);
+        t
+        const unit = "{{ selected_unit }}";
+        const unitLabel = unit === "imperial" ? "°F" : "°C";
+
+
+        
+        const ctx = document.getElementById('forecastChart').getContext('2d');
+        const forecastChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: `Temperature (${unitLabel})`,
+                    data: temps,
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.3,
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: 'rgb(75, 192, 192)',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: `Temperature (${unitLabel})`
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+</body>
+</html>
