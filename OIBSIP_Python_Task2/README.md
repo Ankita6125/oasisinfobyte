@@ -16,7 +16,7 @@ This project is a modern, feature-rich **Body Mass Index (BMI) Calculator** buil
 
 ## 📸 Screenshot
 
-![Screenshot 1](screenshot1.png)
-![Screenshot 2](screenshot2.png)
+![Screenshot 1](Screenshot4.png)
+![Screenshot 2](screenshot3.png)
 
 

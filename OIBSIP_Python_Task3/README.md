@@ -44,6 +44,6 @@ The objective of this project is to create an advanced password generator with a
 ## 📸 Screenshot
 
 
-![Screenshot 1](screenshot1.png)
+![Screenshot 1](Screenshot5.png)
 
 
